@@ -58,7 +58,8 @@ export const createApp = () => {
     serveStatic({
       root: config.publicDir,
       onFound: (_path, c) => {
-        c.header("Cache-Control", c.req.query("v") ? "public, max-age=31536000, immutable" : "public, max-age=604800");
+        if (!config.production) c.header("Cache-Control", "no-cache");
+        else c.header("Cache-Control", c.req.query("v") ? "public, max-age=31536000, immutable" : "public, max-age=604800");
       }
     })
   );

@@ -23,7 +23,8 @@ const computeVersion = (): string => {
 
 let version: string | null = null;
 
-export const assetVersion = () => (version ??= computeVersion());
+/** In Produktion einmal berechnet, in der Entwicklung bei jedem Aufruf (Dateien ändern sich ständig). */
+export const assetVersion = () => (config.production ? (version ??= computeVersion()) : computeVersion());
 
 export const asset = (file: string) => `/assets/${file}?v=${assetVersion()}`;
 
