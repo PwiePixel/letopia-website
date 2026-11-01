@@ -91,9 +91,7 @@ const LEGACY: Record<string, string> = {
   "/impressum.html": "/impressum",
   "/datenschutz.html": "/datenschutz",
   "/agb.html": "/agb",
-  "/404.html": "/",
-  "/admin/index.php": "/admin",
-  "/admin/": "/admin"
+  "/404.html": "/"
 };
 
 for (const [from, to] of Object.entries(LEGACY)) {

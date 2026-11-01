@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { compress } from "hono/compress";
 import { HTTPException } from "hono/http-exception";
 import { config } from "./config.js";
@@ -77,6 +78,13 @@ export const createApp = () => {
   app.get("/healthz", c => c.json({ ok: true }));
   app.get("/favicon.ico", c => c.redirect("/assets/img/favicon.png", 301));
 
+  // Formulare sind klein; nur der Medien-Upload darf größere Dateien schicken.
+  const formLimit = bodyLimit({ maxSize: 2 * 1024 * 1024, onError: c => c.text("Die Anfrage ist zu groß.", 413) });
+  const uploadLimit = bodyLimit({ maxSize: config.maxUploadBytes * 10 + 1024 * 1024, onError: c => c.text("Die Dateien sind zu groß.", 413) });
+  app.use("/admin/*", (c, next) => (c.req.path === "/admin/medien" ? uploadLimit(c, next) : formLimit(c, next)));
+
+  app.get("/admin/", c => c.redirect("/admin", 301));
+  app.get("/admin/index.php", c => c.redirect("/admin", 301));
   app.route("/api", apiRoutes);
   app.route("/admin", adminRoutes);
   app.route("/", seoRoutes);
