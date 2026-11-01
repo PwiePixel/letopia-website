@@ -1,0 +1,34 @@
+{
+  "kategorien": [
+    {
+      "name": "Erste Schritte",
+      "icon": "flag",
+      "artikel": ["willkommen", "server-beitreten", "befehle"]
+    },
+    {
+      "name": "Grundstücke & Städte",
+      "icon": "building",
+      "artikel": ["grundstuecke", "staedte"]
+    },
+    {
+      "name": "Wirtschaft",
+      "icon": "coins",
+      "artikel": ["geld-verdienen", "jobs", "auktionshaus", "spielershops"]
+    },
+    {
+      "name": "Welten & Events",
+      "icon": "mountain",
+      "artikel": ["farmwelten", "events"]
+    },
+    {
+      "name": "Items",
+      "icon": "gem",
+      "artikel": ["custom-items"]
+    },
+    {
+      "name": "Ränge & Support",
+      "icon": "shield",
+      "artikel": ["raenge", "support", "faq"]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "letopia-website",
+  "version": "2.0.0",
+  "description": "Website, Wiki und Admin-Panel des Minecraft CityBuild Servers Letopia – Node.js + TypeScript",
+  "private": true,
+  "license": "UNLICENSED",
+  "author": "PwiePixel",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "tsx scripts/dev.ts",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "tsc -p tsconfig.json",
+    "build:client": "tsc -p tsconfig.client.json && tsx scripts/build-client.ts",
+    "start": "node --disable-warning=ExperimentalWarning dist/server/index.js",
+    "cli": "node --disable-warning=ExperimentalWarning dist/server/cli.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.client.json",
+    "test": "node --disable-warning=ExperimentalWarning --import tsx --test \"test/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "hono": "^4.13.16"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

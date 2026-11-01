@@ -1,0 +1,140 @@
+[
+  {
+    "id": "sternsplitter-spitzhacke",
+    "name": "Sternsplitter-Spitzhacke",
+    "typ": "Werkzeug",
+    "seltenheit": "episch",
+    "sprite": "pickaxe",
+    "farbe": "#8fd8ff",
+    "lore": ["Effizienz VI", "Adersucher I"],
+    "beschreibung": "Beim Abbauen von Erzen leuchten für ein paar Sekunden alle gleichen Erze im Umkreis von 6 Blöcken auf.",
+    "herkunft": "Crafting",
+    "rezept": "sternsplitter-spitzhacke"
+  },
+  {
+    "id": "kernholz-beil",
+    "name": "Holzfällerbeil „Kernholz“",
+    "typ": "Werkzeug",
+    "seltenheit": "selten",
+    "sprite": "axe",
+    "farbe": "#d9a25b",
+    "lore": ["Effizienz IV", "Baumfäller I"],
+    "beschreibung": "Fällt in der Farmwelt einen ganzen Baum mit einem Schlag. Auf Grundstücken funktioniert es wie ein normales Beil.",
+    "herkunft": "Crafting, Holzfäller-Job ab Level 25",
+    "rezept": "kernholz-beil"
+  },
+  {
+    "id": "anglerrute-tiefseeblick",
+    "name": "Anglerrute „Tiefseeblick“",
+    "typ": "Werkzeug",
+    "seltenheit": "episch",
+    "sprite": "rod",
+    "farbe": "#5fb8ff",
+    "lore": ["Glück des Meeres III", "Köder III"],
+    "beschreibung": "Erhöht im Hafenviertel die Chance auf seltene Fische für den Fischmarkt.",
+    "herkunft": "Crafting",
+    "rezept": "anglerrute-tiefseeblick"
+  },
+  {
+    "id": "hafenklinge",
+    "name": "Hafenklinge",
+    "typ": "Waffe",
+    "seltenheit": "selten",
+    "sprite": "sword",
+    "farbe": "#6fd3c6",
+    "lore": ["Schärfe V", "Gezeitenhieb I"],
+    "beschreibung": "Verursacht bei Regen zusätzlichen Schaden. Wird von vielen Hafenbewohnern einfach aus Stil getragen.",
+    "herkunft": "Crafting",
+    "rezept": "hafenklinge"
+  },
+  {
+    "id": "sonnwendschwert",
+    "name": "Sonnwendschwert",
+    "typ": "Waffe",
+    "seltenheit": "legendaer",
+    "sprite": "sword",
+    "farbe": "#ffc24a",
+    "lore": ["Schärfe VI", "Sonnenglut II", "Turniersieger 2026"],
+    "beschreibung": "Nur drei Exemplare existieren – die Preise für die Top 3 des Sommerturniers 2026.",
+    "herkunft": "PvP-Turnier Sommer 2026"
+  },
+  {
+    "id": "buergermeisterhelm",
+    "name": "Bürgermeisterhelm",
+    "typ": "Rüstung",
+    "seltenheit": "episch",
+    "sprite": "helmet",
+    "farbe": "#e8c060",
+    "lore": ["Schutz III", "Amtswürde"],
+    "beschreibung": "Wird bei jeder Stadtgründung an den Bürgermeister überreicht. Hat die Werte eines Eisenhelms, sieht aber deutlich besser aus.",
+    "herkunft": "Stadtgründung"
+  },
+  {
+    "id": "laterne-der-altstadt",
+    "name": "Laterne der Altstadt",
+    "typ": "Möbel",
+    "seltenheit": "gewoehnlich",
+    "sprite": "lantern",
+    "farbe": "#ffcf6e",
+    "lore": ["Geht nachts von selbst an"],
+    "beschreibung": "Die gleichen Laternen wie in der Altstadt am Spawn. Leuchten nur zwischen Sonnenuntergang und Sonnenaufgang.",
+    "herkunft": "Crafting, Händler am Spawn",
+    "rezept": "laterne-der-altstadt"
+  },
+  {
+    "id": "stadtbanner",
+    "name": "Stadtbanner",
+    "typ": "Möbel",
+    "seltenheit": "gewoehnlich",
+    "sprite": "banner",
+    "farbe": "#e5534b",
+    "lore": ["Zeigt das Wappen deiner Stadt"],
+    "beschreibung": "Übernimmt automatisch das Wappen und die Farbe deiner Stadt. Wer die Stadt wechselt, dessen Banner wechselt mit.",
+    "herkunft": "Crafting",
+    "rezept": "stadtbanner"
+  },
+  {
+    "id": "glueckstrank",
+    "name": "Glückstrank",
+    "typ": "Trank",
+    "seltenheit": "selten",
+    "sprite": "potion",
+    "farbe": "#ff7ad9",
+    "lore": ["Glück II (30:00)"],
+    "beschreibung": "Erhöht 30 Minuten lang die Chance auf seltene Drops in allen Farmwelten.",
+    "herkunft": "Vote-Kiste, Braustand im Marktviertel"
+  },
+  {
+    "id": "sternsplitter",
+    "name": "Sternsplitter",
+    "typ": "Material",
+    "seltenheit": "selten",
+    "sprite": "shard",
+    "farbe": "#9fe6ff",
+    "lore": ["Handwerksmaterial"],
+    "beschreibung": "Seltenes Material aus dem End der Farmwelt. Wird für viele Rezepte gebraucht und ist entsprechend begehrt.",
+    "herkunft": "End-Farmwelt (Endermen, Endstein)"
+  },
+  {
+    "id": "kuerbislaterne-grinsekopf",
+    "name": "Kürbislaterne „Grinsekopf“",
+    "typ": "Möbel",
+    "seltenheit": "saisonal",
+    "sprite": "lantern",
+    "farbe": "#ff9a3c",
+    "lore": ["Halloween 2025", "Grinst dich an. Immer."],
+    "beschreibung": "Belohnung aus dem Halloween-Event 2025. Dreht sich langsam zum nächsten Spieler.",
+    "herkunft": "Halloween-Event 2025"
+  },
+  {
+    "id": "gruenderabzeichen",
+    "name": "Gründerabzeichen",
+    "typ": "Sammelstück",
+    "seltenheit": "legendaer",
+    "sprite": "star",
+    "farbe": "#ffd24a",
+    "lore": ["Von Anfang an dabei"],
+    "beschreibung": "Bekamen alle Spieler, die in der ersten Woche nach dem Start auf Letopia gespielt haben. Nicht mehr erhältlich.",
+    "herkunft": "Startwoche 2025"
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "stand": "2026-09-01",
+  "gruppen": [
+    {
+      "rang": "Inhaber",
+      "farbe": "#e5534b",
+      "mitglieder": [
+        { "name": "Tjarvik", "rolle": "Owner", "seit": "2025", "info": "Hat Letopia gegründet und behält den Überblick über alles, was sonst liegen bleibt." }
+      ]
+    },
+    {
+      "rang": "Administration",
+      "farbe": "#ff8a3d",
+      "mitglieder": [
+        { "name": "Nordlicht_", "rolle": "Admin", "seit": "2025", "info": "Server, Backups und alles Technische, das nachts um drei ausfällt." },
+        { "name": "Mirabellen", "rolle": "Admin", "seit": "2025", "info": "Kümmert sich um Team, Bewerbungen und die Planung größerer Updates." }
+      ]
+    },
+    {
+      "rang": "Entwicklung",
+      "farbe": "#5aa9ff",
+      "mitglieder": [
+        { "name": "Codewurm", "rolle": "Developer", "seit": "2025", "info": "Schreibt die Stadt- und Wirtschaftsplugins." },
+        { "name": "Brixxo", "rolle": "Developer", "seit": "2026", "info": "Custom Items, Resourcepack und alles, was glitzert." }
+      ]
+    },
+    {
+      "rang": "Moderation",
+      "farbe": "#3ddc84",
+      "mitglieder": [
+        { "name": "Fenjaa", "rolle": "Moderatorin", "seit": "2025", "info": "Leitet das Support-Team und bearbeitet Entbannungsanträge." },
+        { "name": "Holzbein42", "rolle": "Moderator", "seit": "2026", "info": "Meistens abends im Spiel und im Discord unterwegs." }
+      ]
+    },
+    {
+      "rang": "Support",
+      "farbe": "#f0c040",
+      "mitglieder": [
+        { "name": "Linnea_", "rolle": "Supporterin", "seit": "2026", "info": "Beantwortet Tickets und hilft Neulingen beim Start." },
+        { "name": "Quendel", "rolle": "Supporter", "seit": "2026", "info": "Kennt jeden Befehl auswendig – fast jeden." },
+        { "name": "Moorbeere", "rolle": "Supporterin", "seit": "2026", "info": "Organisiert die Schatzsuche am Samstagabend." }
+      ]
+    },
+    {
+      "rang": "Bauteam",
+      "farbe": "#c77dff",
+      "mitglieder": [
+        { "name": "Schieferdach", "rolle": "Head-Builder", "seit": "2025", "info": "Hat den Spawn und das Hafenviertel geplant." },
+        { "name": "Tessarin", "rolle": "Builder", "seit": "2025", "info": "Zuständig für Event-Maps und Deko." },
+        { "name": "Kalkstein_", "rolle": "Builder", "seit": "2026", "info": "Baut gerade am neuen Bahnhof – psst." }
+      ]
+    }
+  ]
+}
