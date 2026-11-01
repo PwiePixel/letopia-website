@@ -1,0 +1,55 @@
+{
+  "zutaten": {
+    "S": { "name": "Sternsplitter", "sprite": "shard", "farbe": "#9fe6ff", "item": "sternsplitter" },
+    "D": { "name": "Diamant", "sprite": "gem", "farbe": "#5ee6e0" },
+    "K": { "name": "Stock", "sprite": "stick", "farbe": "#a47845" },
+    "E": { "name": "Eisenbarren", "sprite": "ingot", "farbe": "#d4d4d4" },
+    "G": { "name": "Goldbarren", "sprite": "ingot", "farbe": "#f5cf45" },
+    "P": { "name": "Prismarinkristalle", "sprite": "dust", "farbe": "#8fe0c8" },
+    "F": { "name": "Faden", "sprite": "string", "farbe": "#f2f2f2" },
+    "L": { "name": "Glowstonestaub", "sprite": "dust", "farbe": "#ffd46b" },
+    "W": { "name": "Wolle (beliebige Farbe)", "sprite": "block", "farbe": "#e5534b" },
+    "H": { "name": "Eichenholzbretter", "sprite": "block", "farbe": "#b8894f" }
+  },
+  "rezepte": [
+    {
+      "id": "sternsplitter-spitzhacke",
+      "ergebnis": "sternsplitter-spitzhacke",
+      "menge": 1,
+      "raster": ["SDS", " K ", " K "],
+      "hinweis": "Sternsplitter findest du im End der Farmwelt oder im Auktionshaus."
+    },
+    {
+      "id": "kernholz-beil",
+      "ergebnis": "kernholz-beil",
+      "menge": 1,
+      "raster": ["EE ", "EK ", " K "],
+      "hinweis": "Erst ab Holzfäller-Level 25 craftbar."
+    },
+    {
+      "id": "anglerrute-tiefseeblick",
+      "ergebnis": "anglerrute-tiefseeblick",
+      "menge": 1,
+      "raster": ["  K", " KF", "KSF"]
+    },
+    {
+      "id": "hafenklinge",
+      "ergebnis": "hafenklinge",
+      "menge": 1,
+      "raster": [" P ", " P ", " K "]
+    },
+    {
+      "id": "laterne-der-altstadt",
+      "ergebnis": "laterne-der-altstadt",
+      "menge": 2,
+      "raster": [" E ", "ELE", " E "]
+    },
+    {
+      "id": "stadtbanner",
+      "ergebnis": "stadtbanner",
+      "menge": 1,
+      "raster": ["WWW", "WGW", " K "],
+      "hinweis": "Nur für Mitglieder einer Stadt."
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+#!/usr/bin/env bash
+# ==============================================================================
+#  letopia – Verwaltungsbefehl für die installierte Website
+#  (wird vom Installer nach /usr/local/bin/letopia kopiert)
+# ==============================================================================
+set -euo pipefail
+
+INSTALL_DIR="/opt/letopia"
+APP_DIR="$INSTALL_DIR/app"
+NODE="$INSTALL_DIR/node/bin/node"
+DATA_DIR="/var/lib/letopia"
+ENV_FILE="/etc/letopia/letopia.env"
+SERVICE="letopia"
+SERVICE_USER="letopia"
+
+if [[ -t 1 ]]; then B=$'\e[1m'; O=$'\e[38;5;214m'; G=$'\e[32m'; R=$'\e[31m'; N=$'\e[0m'; else B=""; O=""; G=""; R=""; N=""; fi
+
+die() { printf '%s✖ %s%s\n' "$R" "$*" "$N" >&2; exit 1; }
+need_root() { [[ $EUID -eq 0 ]] || exec sudo "$0" "$@"; }
+env_value() { sed -n "s/^$1=//p" "$ENV_FILE" 2>/dev/null | tail -n1; }
+
+cli() {
+  [[ -x "$NODE" ]] || die "Node.js fehlt unter $NODE – bitte den Installer erneut ausführen."
+  runuser -u "$SERVICE_USER" -- env HOME="$INSTALL_DIR/.home" LETOPIA_ENV_FILE="$ENV_FILE" \
+    "$NODE" --disable-warning=ExperimentalWarning "$APP_DIR/dist/server/cli.js" "$@"
+}
+
+hilfe() {
+  cat <<EOF
+${O}${B}letopia${N} – Verwaltung der Letopia-Website
+
+${B}Betrieb${N}
+  letopia status                 Zustand von Dienst, Webserver und Backups
+  letopia start | stop | restart Dienst steuern
+  letopia logs [-f]              Server-Log anzeigen (-f = live mitlesen)
+  letopia update                 Neueste Version holen, bauen und neu starten
+  letopia config                 Konfiguration bearbeiten (danach automatischer Neustart)
+
+${B}Admin-Accounts${N}
+  letopia admin liste                     Alle Accounts anzeigen
+  letopia admin neu <name> [rolle]        Account anlegen (rolle: admin, editor, moderator)
+  letopia admin passwort <name>           Neues Passwort erzeugen (Login vergessen?)
+  letopia admin 2fa-aus <name>            Zwei-Faktor-Schutz abschalten (Handy verloren?)
+  letopia admin loeschen <name>           Account löschen
+
+${B}Daten${N}
+  letopia backup                 Backup jetzt erstellen (Datenbank + Uploads)
+  letopia backups                Vorhandene Backups anzeigen
+  letopia restore <datei>        Backup zurückspielen
+  letopia import <pfad>          Bewerbungen der alten PHP-Website übernehmen
+  letopia info                   Überblick über die Datenbank
+
+${B}Server${N}
+  letopia ssl [domain] [email]   HTTPS-Zertifikat (neu) anfordern
+  letopia uninstall              Website vom Server entfernen
+  letopia version                Versionen anzeigen
+EOF
+}
+
+cmd="${1:-hilfe}"
+shift || true
+
+case "$cmd" in
+  hilfe|help|-h|--help) hilfe ;;
+
+  status)
+    need_root status
+    systemctl --no-pager --lines=0 status "$SERVICE" || true
+    port=$(env_value PORT)
+    if curl -fsS "http://127.0.0.1:${port:-3000}/healthz" > /dev/null 2>&1; then printf '\n%s✔ App antwortet%s auf Port %s\n' "$G" "$N" "${port:-3000}"; else printf '\n%s✖ App antwortet nicht%s – Log: letopia logs\n' "$R" "$N"; fi
+    if systemctl is-active --quiet nginx 2>/dev/null; then printf '%s✔ Nginx läuft%s\n' "$G" "$N"; fi
+    printf 'Website:  %s\n' "$(env_value SITE_URL)"
+    printf 'Backup:   %s\n' "$(systemctl list-timers "$SERVICE-backup.timer" --no-pager --no-legend 2>/dev/null | awk '{print "nächstes: "$1" "$2" "$3}')"
+    ;;
+
+  start|stop|restart)
+    need_root "$cmd"
+    systemctl "$cmd" "$SERVICE"
+    printf '%s✔%s %s ausgeführt\n' "$G" "$N" "$cmd"
+    ;;
+
+  logs|log)
+    need_root logs "$@"
+    if [[ "${1:-}" == "-f" ]]; then journalctl -u "$SERVICE" -f -n 50; else journalctl -u "$SERVICE" -n 200 --no-pager; fi
+    ;;
+
+  update)
+    need_root update "$@"
+    tmp=$(mktemp)
+    cp "$APP_DIR/install.sh" "$tmp"
+    trap 'rm -f "$tmp"' EXIT
+    bash "$tmp" --update -y "$@"
+    ;;
+
+  config)
+    need_root config
+    "${EDITOR:-nano}" "$ENV_FILE"
+    systemctl restart "$SERVICE"
+    printf '%s✔%s Gespeichert und neu gestartet\n' "$G" "$N"
+    ;;
+
+  admin)
+    need_root admin "$@"
+    sub="${1:-liste}"
+    shift || true
+    case "$sub" in
+      liste|list) cli user:list ;;
+      neu|create|anlegen)
+        [[ -n "${1:-}" ]] || die "Bitte einen Namen angeben: letopia admin neu <name> [rolle]"
+        cli user:create "$1" --role "${2:-admin}"
+        ;;
+      passwort|password) [[ -n "${1:-}" ]] || die "Bitte den Namen angeben."; cli user:password "$1" ;;
+      2fa-aus|2fa-off) [[ -n "${1:-}" ]] || die "Bitte den Namen angeben."; cli user:2fa-off "$1" ;;
+      loeschen|delete) [[ -n "${1:-}" ]] || die "Bitte den Namen angeben."; cli user:delete "$1" ;;
+      *) die "Unbekannt: letopia admin $sub (siehe: letopia hilfe)" ;;
+    esac
+    ;;
+
+  backup)
+    need_root backup
+    cli backup --keep "${1:-14}"
+    ;;
+
+  backups)
+    need_root backups
+    ls -lh "$DATA_DIR/backups" 2>/dev/null || echo "Noch keine Backups."
+    ;;
+
+  restore)
+    need_root restore "$@"
+    file="${1:-}"
+    [[ -f "$file" ]] || { [[ -f "$DATA_DIR/backups/$file" ]] && file="$DATA_DIR/backups/$file"; } || die "Backup-Datei nicht gefunden: ${1:-}"
+    [[ -f "$file" ]] || die "Backup-Datei nicht gefunden: ${1:-}"
+    printf 'Backup %s zurückspielen? Die aktuellen Daten werden vorher gesichert. [j/N] ' "$(basename "$file")"
+    read -r answer
+    [[ "$answer" =~ ^[jJyY]$ ]] || { echo "Abgebrochen."; exit 0; }
+    cli backup --keep 30 > /dev/null
+    systemctl stop "$SERVICE"
+    work=$(mktemp -d)
+    trap 'rm -rf "$work"' EXIT
+    case "$file" in
+      *.tar.gz)
+        tar -xzf "$file" -C "$work"
+        [[ -f "$work/letopia.db" ]] || die "Im Archiv fehlt letopia.db"
+        install -m 640 -o "$SERVICE_USER" -g "$SERVICE_USER" "$work/letopia.db" "$DATA_DIR/letopia.db"
+        if [[ -d "$work/uploads" ]]; then rm -rf "$DATA_DIR/uploads"; cp -a "$work/uploads" "$DATA_DIR/uploads"; chown -R "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR/uploads"; fi
+        ;;
+      *.db) install -m 640 -o "$SERVICE_USER" -g "$SERVICE_USER" "$file" "$DATA_DIR/letopia.db" ;;
+      *) die "Unbekanntes Format (erwartet .tar.gz oder .db)" ;;
+    esac
+    rm -f "$DATA_DIR/letopia.db-wal" "$DATA_DIR/letopia.db-shm"
+    cli migrate > /dev/null
+    systemctl start "$SERVICE"
+    printf '%s✔%s Backup zurückgespielt\n' "$G" "$N"
+    ;;
+
+  import)
+    need_root import "$@"
+    [[ -n "${1:-}" ]] || die "Bitte den Pfad zur alten letopia.sqlite oder zum alten Website-Ordner angeben."
+    src=$(realpath "$1")
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    if [[ -d "$src" ]]; then src="$src/api/storage/letopia.sqlite"; fi
+    [[ -f "$src" ]] || die "Nicht gefunden: $src"
+    cp "$src" "$tmp/alt.sqlite"
+    chown -R "$SERVICE_USER:$SERVICE_USER" "$tmp"
+    cli import-legacy "$tmp/alt.sqlite"
+    ;;
+
+  info)
+    need_root info
+    cli info
+    ;;
+
+  ssl)
+    need_root ssl "$@"
+    domain="${1:-$(env_value LETOPIA_DOMAIN)}"
+    email="${2:-}"
+    [[ -n "$domain" ]] || die "Bitte die Domain angeben: letopia ssl <domain> [email]"
+    command -v certbot > /dev/null || apt-get install -y -qq certbot python3-certbot-nginx > /dev/null
+    if ! grep -q "server_name .*$domain" /etc/nginx/sites-available/letopia.conf 2>/dev/null; then
+      sed -i "s/server_name .*;/server_name $domain www.$domain;/" /etc/nginx/sites-available/letopia.conf
+      sed -i 's/ default_server//g' /etc/nginx/sites-available/letopia.conf
+      nginx -t && systemctl reload nginx
+    fi
+    args=(-d "$domain")
+    getent ahosts "www.$domain" > /dev/null 2>&1 && args+=(-d "www.$domain")
+    if [[ -n "$email" ]]; then args+=(-m "$email"); else args+=(--register-unsafely-without-email); fi
+    certbot --nginx --non-interactive --agree-tos --redirect "${args[@]}"
+    sed -i "s|^SITE_URL=.*|SITE_URL=https://$domain|; s|^LETOPIA_DOMAIN=.*|LETOPIA_DOMAIN=$domain|" "$ENV_FILE"
+    systemctl restart "$SERVICE"
+    printf '%s✔%s HTTPS aktiv: https://%s\n' "$G" "$N" "$domain"
+    ;;
+
+  version|--version|-v)
+    printf 'Letopia %s · Node.js %s\n' "$(sed -n 's/.*"version": "\(.*\)".*/\1/p' "$APP_DIR/package.json" | head -n1)" "$("$NODE" -v 2>/dev/null || echo "?")"
+    git -c safe.directory="$APP_DIR" -C "$APP_DIR" log -1 --format="Code-Stand: %h vom %cd" --date=short 2>/dev/null || true
+    ;;
+
+  uninstall)
+    need_root uninstall
+    printf '%sDie Website wird vom Server entfernt.%s Fortfahren? [j/N] ' "$B" "$N"
+    read -r answer
+    [[ "$answer" =~ ^[jJyY]$ ]] || { echo "Abgebrochen."; exit 0; }
+    printf 'Auch alle Daten (Datenbank, Uploads, Backups in %s) löschen? [j/N] ' "$DATA_DIR"
+    read -r wipe
+    systemctl disable --now "$SERVICE" "$SERVICE-backup.timer" > /dev/null 2>&1 || true
+    rm -f "/etc/systemd/system/$SERVICE.service" "/etc/systemd/system/$SERVICE-backup.service" "/etc/systemd/system/$SERVICE-backup.timer"
+    systemctl daemon-reload > /dev/null 2>&1 || true
+    if [[ -e /etc/nginx/sites-enabled/letopia.conf || -e /etc/nginx/sites-available/letopia.conf ]]; then
+      rm -f /etc/nginx/sites-enabled/letopia.conf /etc/nginx/sites-available/letopia.conf
+      if nginx -t > /dev/null 2>&1; then systemctl reload nginx > /dev/null 2>&1 || nginx -s reload > /dev/null 2>&1 || true; fi
+    fi
+    rm -rf "$INSTALL_DIR"
+    if [[ "$wipe" =~ ^[jJyY]$ ]]; then rm -rf "$DATA_DIR" /etc/letopia; userdel "$SERVICE_USER" 2>/dev/null || true; echo "Daten gelöscht."; else echo "Daten bleiben in $DATA_DIR und /etc/letopia erhalten."; fi
+    rm -f /usr/local/bin/letopia
+    printf '%s✔%s Letopia wurde entfernt.\n' "$G" "$N"
+    ;;
+
+  *)
+    printf '%sUnbekannter Befehl: %s%s\n\n' "$R" "$cmd" "$N" >&2
+    hilfe
+    exit 1
+    ;;
+esac
