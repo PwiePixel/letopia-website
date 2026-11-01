@@ -465,11 +465,23 @@ if [[ $WITH_NGINX -eq 1 && "$MODE" == "install" ]]; then
   if [[ -n "$DOMAIN" && "$DOMAIN" != www.* ]]; then names="$DOMAIN www.$DOMAIN"; fi
   listen6=""
   [[ -f /proc/net/if_inet6 ]] && listen6="listen [::]:80;"
+  # Läuft auf Port 80 schon ein anderer Webserver (z. B. Apache)?
+  port80=$(ss -ltnpH 'sport = :80' 2>/dev/null | grep -v nginx | head -n1 || true)
+  if [[ -n "$port80" ]]; then
+    die "Port 80 ist schon belegt: ${port80##*users:} – z. B. durch Apache (systemctl disable --now apache2). Danach den Installer erneut starten oder mit --no-nginx installieren."
+  fi
   default_flag=""
   if [[ -z "$DOMAIN" ]]; then
-    default_flag=" default_server"
-    [[ -n "$listen6" ]] && listen6="listen [::]:80 default_server;"
-    rm -f /etc/nginx/sites-enabled/default
+    # Debian-Standardseite entfernen; gibt es eine andere Standardseite, bleibt sie unangetastet.
+    if [[ -L /etc/nginx/sites-enabled/default && "$(readlink -f /etc/nginx/sites-enabled/default)" == /etc/nginx/sites-available/default ]]; then
+      rm -f /etc/nginx/sites-enabled/default
+    fi
+    if grep -rlsE "listen[^;]*default_server" /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null | grep -qv letopia.conf; then
+      warn "Nginx hat schon eine Standardseite – Letopia ist dann nur über eine Domain erreichbar (später: letopia ssl <domain>)."
+    else
+      default_flag=" default_server"
+      [[ -n "$listen6" ]] && listen6="listen [::]:80 default_server;"
+    fi
   fi
   cat > /etc/nginx/sites-available/letopia.conf <<EOF
 # Letopia – erzeugt vom Installer. Eigene Anpassungen bleiben bei Updates erhalten.

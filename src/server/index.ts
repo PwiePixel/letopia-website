@@ -13,7 +13,7 @@ seedIfEmpty();
 
 if (!clientBuilt()) log.warn("Browser-Skripte fehlen – bitte `npm run build` ausführen.");
 if (countUsers() === 0) {
-  log.warn("Es gibt noch keinen Admin-Benutzer. Anlegen mit: letopia admin create <name>  (oder npm run cli -- user:create <name>)");
+  log.warn("Es gibt noch keinen Admin-Benutzer. Anlegen mit: letopia admin neu <name>  (Entwicklung: npm run cli -- user:create <name>)");
 }
 
 const app = createApp();

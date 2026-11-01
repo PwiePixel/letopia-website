@@ -104,6 +104,9 @@ const startsBlock = (line: string): boolean =>
   /^-{3,}\s*$/.test(line) ||
   line.trim().startsWith("|");
 
+/** Trennzeile einer Tabelle, z. B. "| --- | :-: | --: |". */
+const TABLE_DELIMITER = /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+
 const cells = (row: string): string[] => row.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
 
 /** Zeile für einen Absatz vorbereiten: Harte Umbrüche (2 Leerzeichen / Backslash) markieren. */
@@ -176,7 +179,7 @@ export const renderMarkdown = (source: string, opts: RenderOptions = {}): Render
       continue;
     }
 
-    if (line.trim().startsWith("|") && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1] ?? "")) {
+    if (line.trim().startsWith("|") && TABLE_DELIMITER.test(lines[i + 1] ?? "")) {
       const head = cells(line);
       const align = cells(lines[i + 1] ?? "").map(c => (c.startsWith(":") && c.endsWith(":") ? "center" : c.endsWith(":") ? "right" : ""));
       const rows: string[][] = [];

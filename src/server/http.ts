@@ -27,7 +27,7 @@ export const isHttps = (c: Context): boolean => {
 /** Öffentliche Basis-URL ohne abschließenden Slash. */
 export const originOf = (c: Context): string => {
   if (config.siteUrl) return config.siteUrl;
-  const host = (config.trustProxy ? c.req.header("x-forwarded-host") : undefined) ?? c.req.header("host") ?? `localhost:${config.port}`;
+  const host = (config.trustProxy ? c.req.header("x-forwarded-host") : undefined) ?? c.req.header("host") ?? new URL(c.req.url).host;
   return `${isHttps(c) ? "https" : "http"}://${host.split(",")[0]?.trim()}`;
 };
 

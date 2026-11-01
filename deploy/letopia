@@ -206,10 +206,10 @@ case "$cmd" in
     read -r wipe
     systemctl disable --now "$SERVICE" "$SERVICE-backup.timer" > /dev/null 2>&1 || true
     rm -f "/etc/systemd/system/$SERVICE.service" "/etc/systemd/system/$SERVICE-backup.service" "/etc/systemd/system/$SERVICE-backup.timer"
-    systemctl daemon-reload
-    if [[ -f /etc/nginx/sites-enabled/letopia.conf || -f /etc/nginx/sites-available/letopia.conf ]]; then
+    systemctl daemon-reload > /dev/null 2>&1 || true
+    if [[ -e /etc/nginx/sites-enabled/letopia.conf || -e /etc/nginx/sites-available/letopia.conf ]]; then
       rm -f /etc/nginx/sites-enabled/letopia.conf /etc/nginx/sites-available/letopia.conf
-      nginx -t > /dev/null 2>&1 && systemctl reload nginx || true
+      if nginx -t > /dev/null 2>&1; then systemctl reload nginx > /dev/null 2>&1 || nginx -s reload > /dev/null 2>&1 || true; fi
     fi
     rm -rf "$INSTALL_DIR"
     if [[ "$wipe" =~ ^[jJyY]$ ]]; then rm -rf "$DATA_DIR" /etc/letopia; userdel "$SERVICE_USER" 2>/dev/null || true; echo "Daten gelöscht."; else echo "Daten bleiben in $DATA_DIR und /etc/letopia erhalten."; fi
